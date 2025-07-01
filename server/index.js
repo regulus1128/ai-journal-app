@@ -22,6 +22,11 @@ app.use(cors({
 app.use('/api/user', userRouter);
 app.use('/api/journal', Router);
 
+app.get('/', (req, res) => {
+    res.send('Hello');
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
