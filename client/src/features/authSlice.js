@@ -7,7 +7,7 @@ export const signup = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
         const response = await axiosInstance.post("/user/register", userData);
-        console.log(response);
+        // console.log(response);
         // toast.success(response.data.message);
         return response.data;
         } catch (error) {
@@ -22,7 +22,7 @@ export const login = createAsyncThunk(
     async (credentials, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post("/user/login", credentials);
-            console.log(response);
+            // console.log(response);
             // toast.success(response.data.message);
             return response.data;
         } catch (error) {
@@ -37,10 +37,10 @@ export const checkAuth = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get("/user/check");
-            console.log(response);
+            // console.log(response);
             return response.data;
         } catch (error) {
-            toast.error(error.response.data.message || "Authentication check failed");
+            // toast.error(error.response.data.message || "Authentication check failed");
             return rejectWithValue(error.response.data);
         }
     }
@@ -65,7 +65,7 @@ export const fetchProfile = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get("/user/profile");
-            console.log(response);
+            // console.log(response);
             return response.data.user;
         } catch (error) {
             toast.error(error.response.data.message || "Failed to fetch profile");

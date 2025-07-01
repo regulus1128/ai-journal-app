@@ -23,7 +23,7 @@ const NewJournalEntry = () => {
 
         try {
             const res = await dispatch(generateResponse(journalData)).unwrap();
-            console.log(res);
+            // console.log(res);
             const journalId = res.entry._id;
             navigate(`/journal/${journalId}`); // Redirect to the journal entry page
         } catch (error) {

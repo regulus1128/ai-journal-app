@@ -39,7 +39,7 @@ const Dashboard = () => {
   const fetchJournalCount = async () => {
     try {
       const res = await axiosInstance.get("/journal/count");
-      console.log(res);
+      // console.log(res);
       setCount(res.data.count);
     } catch (error) {
       console.log(error);

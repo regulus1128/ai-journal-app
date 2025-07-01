@@ -36,7 +36,7 @@ export const fetchMoodScores = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/journal/mood-trend");
-      console.log(res);
+      // console.log(res);
     } catch (error) {
       toast.error(error.response.data.message || "Failed to fetch mood scores!");
       return rejectWithValue(error.response.data);
@@ -49,7 +49,7 @@ export const fetchEmotions = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/journal/emotion-stats");
-      console.log(res);
+      // console.log(res);
     } catch (error) {
       toast.error(error.response.data.message || "Failed to fetch emotions!");
       return rejectWithValue(error.response.data);
@@ -62,7 +62,7 @@ export const fetchStreak = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/journal/streak");
-      console.log(res);
+      // console.log(res);
     } catch (error) {
       toast.error(error.response.data.message || "Failed to fetch streak!");
       return rejectWithValue(error.response.data);

@@ -30,7 +30,7 @@ function App() {
   }, [dispatch]);
 
   if (isCheckingAuth) {
-    return <div className="text-center mt-10">Checking authentication...</div>;
+    return <div className="text-center noto-sans mt-10">Checking authentication...</div>;
   }
   return (
     <>
