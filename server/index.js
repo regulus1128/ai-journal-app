@@ -40,6 +40,22 @@ app.get('/', (req, res) => {
     res.send('Hello');
 });
 
+app.get("/auth/google", passport.authenticate("google", {
+    scope: ["profile", "email"]
+}));
+
+app.get("/auth/google/callback", 
+  passport.authenticate("google", {
+    failureRedirect: `${process.env.FRONTEND_URL}/login`,
+    session: true
+  }),
+  (req, res) => {
+    // redirect user to frontend after successful login
+    res.redirect(`${process.env.FRONTEND_URL}/auth/success`);
+  }
+);
+
+  
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
