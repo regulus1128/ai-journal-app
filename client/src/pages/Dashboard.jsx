@@ -13,11 +13,13 @@ const capitalizeFirst = (str) => {
 const Dashboard = () => {
 
   const { user } = useSelector((state) => state.auth);
-  const { theme } = useSelector((state) => state.theme);
+  const { mode } = useSelector((state) => state.darkMode);
   const [streak, setStreak] = useState(0);
   const [moodToday, setMoodToday] = useState("-");
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedTime, setSelectedTime] = useState("09:00");
 
   const getStreak = async () => {
     const res = await axiosInstance.get("/journal/streak");
@@ -57,60 +59,132 @@ const Dashboard = () => {
 
   // console.log(user);
   return (
-    <div className="min-h-screen urbanist pt-16">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className={`min-h-screen urbanist pt-16 transition-colors duration-300 ${mode ? "bg-gray-900" : "bg-gray-50"}`}>
+      <div className="container mx-auto px-2 py-8 max-w-6xl">
         {/* Header Section */}
         <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
+          <div className="flex items-center justify-between gap-3 mb-4">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              {/* <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <Heart className="w-6 h-6 text-white" />
+            </div> */}
+              <h1
+                className={`text-4xl nunito-sans font-bold bg-gradient-to-r ${
+                  mode ? "from-white to-gray-300" : "from-gray-900 to-gray-600"
+                } bg-clip-text text-transparent transition-colors duration-300`}
+              >
                 Welcome back, {user?.name || "Friend"}!
               </h1>
-              <p className="text-gray-600 text-lg mt-1 flex items-center gap-2 schibsted-grotesk">
+              <p
+                className={`text-lg mt-1 flex items-center gap-2 schibsted-grotesk transition-colors duration-300 ${
+                  mode ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
                 {/* <Sparkles className="w-4 h-4 text-yellow-500" /> */}
                 Ready to reflect and grow today?
               </p>
+              
             </div>
+            {/* <div className='flex'>
+                <button onClick={() => setShowTimePicker(true)} className='rounded-full bg-gradient-to-r from-pink-500 to-purple-500 px-3 py-2 text-white cursor-pointer'>Set Daily Affirmation Time</button>
+            </div> */}
           </div>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-sm">
+          <div
+            className={`backdrop-blur-sm rounded-2xl p-6 border shadow-sm transition-all duration-300 ${
+              mode
+                ? "bg-gray-800/70 border-gray-700/50 hover:bg-gray-800/90"
+                : "bg-white/70 border-gray-200/50 hover:bg-white/90"
+            }`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-600">This Week</p>
-                <p className="text-2xl font-bold text-gray-900">{count} entries</p>
+                <p className={`font-medium transition-colors duration-300 ${mode ? "text-gray-300" : "text-gray-600"}`}>
+                  This Week
+                </p>
+                <p
+                  className={`text-2xl font-bold transition-colors duration-300 ${
+                    mode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {count} entries
+                </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-green-600" />
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                  mode ? "bg-green-900/50" : "bg-green-100"
+                }`}
+              >
+                <Calendar
+                  className={`w-6 h-6 transition-colors duration-300 ${mode ? "text-green-400" : "text-green-600"}`}
+                />
               </div>
             </div>
           </div>
 
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-sm">
+          <div
+            className={`backdrop-blur-sm rounded-2xl p-6 border shadow-sm transition-all duration-300 ${
+              mode
+                ? "bg-gray-800/70 border-gray-700/50 hover:bg-gray-800/90"
+                : "bg-white/70 border-gray-200/50 hover:bg-white/90"
+            }`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-600">Current Streak</p>
-                <p className="text-2xl font-bold text-gray-900">{streak}</p>
+                <p className={`font-medium transition-colors duration-300 ${mode ? "text-gray-300" : "text-gray-600"}`}>
+                  Current Streak
+                </p>
+                <p
+                  className={`text-2xl font-bold transition-colors duration-300 ${
+                    mode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {streak}
+                </p>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-orange-600" />
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                  mode ? "bg-orange-900/50" : "bg-orange-100"
+                }`}
+              >
+                <TrendingUp
+                  className={`w-6 h-6 transition-colors duration-300 ${mode ? "text-orange-400" : "text-orange-600"}`}
+                />
               </div>
             </div>
           </div>
 
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-sm">
+          <div
+            className={`backdrop-blur-sm rounded-2xl p-6 border shadow-sm transition-all duration-300 ${
+              mode
+                ? "bg-gray-800/70 border-gray-700/50 hover:bg-gray-800/90"
+                : "bg-white/70 border-gray-200/50 hover:bg-white/90"
+            }`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className=" font-medium text-gray-600">Mood Today</p>
-                <p className="text-2xl font-bold text-gray-900">{capitalizeFirst(moodToday)}</p>
+                <p className={`font-medium transition-colors duration-300 ${mode ? "text-gray-300" : "text-gray-600"}`}>
+                  Mood Today
+                </p>
+                <p
+                  className={`text-2xl font-bold transition-colors duration-300 ${
+                    mode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {capitalizeFirst(moodToday)}
+                </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <Heart className="w-6 h-6 text-purple-600" />
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                  mode ? "bg-purple-900/50" : "bg-purple-100"
+                }`}
+              >
+                <Heart
+                  className={`w-6 h-6 transition-colors duration-300 ${mode ? "text-purple-400" : "text-purple-600"}`}
+                />
               </div>
             </div>
           </div>
@@ -200,6 +274,43 @@ const Dashboard = () => {
             </div>
           </div>
         </div> */}
+        {showTimePicker && (
+  <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50">
+    <div className={`${mode ? "bg-gray-900" : "bg-gray-50"} p-6 rounded-lg shadow-lg w-80 space-y-4 relative`}>
+      <h2 className="text-lg font-semibold text-center text-purple-700">Pick a Time</h2>
+
+      <input
+        type="time"
+        value={selectedTime}
+        onChange={(e) => setSelectedTime(e.target.value)}
+        className={`w-full border border-gray-300 rounded px-3 py-2 ${
+          mode ? "text-white" : "text-gray-900"
+        }`}
+      />
+
+      <div className="flex justify-between pt-4">
+        <button
+          onClick={() => {
+            setShowTimePicker(false);
+            // TODO: Save selectedTime somewhere (state/localStorage/DB)
+          }}
+          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+        >
+          Save
+        </button>
+        <button
+          onClick={() => setShowTimePicker(false)}
+          className={`${
+            mode ? "text-white hover:text-gray-200" : "text-gray-900 hover:text-gray-700"
+          } px-4 py-2 rounded `}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+  )}
+
       </div>
     </div>
   )

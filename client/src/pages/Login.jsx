@@ -25,7 +25,7 @@ const Login = () => {
     try {
       const res = await dispatch(login(loginData));
       // console.log(res);
-      // toast.success(res.payload.message);
+      toast.success(res.payload.message);
       navigate("/dashboard");
     } catch (error) {
       console.log(error);

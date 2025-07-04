@@ -1,5 +1,5 @@
 import express from 'express';
-import { countJournalEntries, deleteJournal, fetchLatestResponse, fetchResponse, fetchResponseById, generateResponse, getEmotionStats, getMoodTrend, trackStreak } from '../controllers/journal.controller.js';
+import { countJournalEntries, deleteJournal, fetchLatestResponse, fetchResponse, fetchResponseById, generateResponse, getEmotionStats, getMoodTrend, setReminder, trackStreak } from '../controllers/journal.controller.js';
 import { protectRoute } from '../middleware/auth.middleware.js';
 
 const Router = express.Router();
@@ -13,5 +13,6 @@ Router.delete('/delete-journal/:id', protectRoute, deleteJournal);
 Router.get('/streak', protectRoute, trackStreak);
 Router.get('/latest', protectRoute, fetchLatestResponse);
 Router.get('/count', protectRoute, countJournalEntries);
+Router.put('/set-reminder', protectRoute, setReminder);
 
 export default Router;

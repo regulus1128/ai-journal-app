@@ -8,10 +8,13 @@ const getEmotionColor = (emotion) => {
     happy: "from-yellow-400 to-orange-500",
     sad: "from-blue-400 to-blue-600",
     angry: "from-red-400 to-red-600",
+    anxiety: "from-purple-400 to-purple-600",
     anxious: "from-purple-400 to-purple-600",
     excited: "from-pink-400 to-pink-600",
     calm: "from-green-400 to-green-600",
     stressed: "from-gray-400 to-gray-600",
+    uncertainty: "from-green-400 to-blue-500",
+    overwhelmed: "from-neutral-400 to-neutral-600",
     hopeful: "from-teal-400 to-teal-600",
     frustrated: "from-orange-400 to-red-500",
     content: "from-emerald-400 to-emerald-600",
@@ -25,6 +28,8 @@ const Insights = () => {
   const dispatch = useDispatch();
   const [moodScores, setMoodScores] = useState([]);
   const [emotionData, setEmotionData] = useState({});
+  const { mode } = useSelector((state) => state.darkMode);
+
 
   const fetchMood = async () => {
     try {
@@ -75,8 +80,8 @@ const Insights = () => {
 
 
   return (
-    <div className="pt-24 px-4 min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div className={`pt-24 px-4 mb-10 min-h-screen transition-colors duration-300 ${mode ? "bg-gray-900" : "bg-gray-50"}`}>
+      <div className="max-w-4xl mx-auto mb-10 bg-white p-4 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-blue-600 mb-6 text-center noto-sans">
           Mood Trends
         </h2>
@@ -103,7 +108,11 @@ const Insights = () => {
           </ResponsiveContainer>
         )}
       </div>
-      <div className="bg-gradient-to-br from-white to-gray-50 p-8 mt-10 mb-10 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+      <div className={`${
+                      mode
+                        ? "bg-gray-800/70 border-gray-700/50 hover:bg-gray-800/90"
+                        : "bg-white/70 border-gray-200/50 hover:bg-white/90"
+                    } p-8 mt-10 mb-10 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300`}>
       {/* Header Section */}
       <div className="flex items-center mb-6">
         <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mr-4">
@@ -120,18 +129,28 @@ const Insights = () => {
           <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent nunito-sans">
             Emotion Insights
           </h2>
-          <p className="text-gray-500 urbanist">Your emotional patterns at a glance</p>
+          <p className={`${
+                  mode ? "text-gray-100" : "text-gray-600"
+                } urbanist`}>Your emotional patterns at a glance</p>
         </div>
       </div>
 
       {/* Most Common Emotion Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-6 border border-blue-100">
+      <div className={`rounded-xl p-6 mb-6 border ${
+                      mode
+                        ? "bg-gray-800/70 border-gray-700 "
+                        : "bg-white/70 border-gray-200 hover:bg-white/90"
+                    }`}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600 mb-1 noto-sans">Most Common Emotion</p>
+            <p className={`text-sm font-medium ${
+                  mode ? "text-gray-100" : "text-gray-600"
+                } mb-1 noto-sans`}>Most Common Emotion</p>
             <div className="flex items-center space-x-3">
               {/* <span className="text-3xl">{getEmotionIcon(mostCommonEmotion)}</span> */}
-              <span className="text-2xl font-bold text-gray-800 capitalize nunito-sans">{mostCommonEmotion}</span>
+              <span className={`text-2xl font-bold ${
+                  mode ? "text-gray-100" : "text-gray-600"
+                } capitalize nunito-sans`}>{mostCommonEmotion}</span>
             </div>
           </div>
           <div
@@ -151,8 +170,10 @@ const Insights = () => {
 
       {/* Top 3 Emotions Section */}
       <div className="space-y-4">
-        <h3 className="text-lg text-gray-800 flex items-center">
-          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mr-3 noto-sans"></div>
+        <h3 className={`text-lg schibsted-grotesk ${
+                  mode ? "text-gray-100" : "text-gray-800"
+                } flex items-center`}>
+          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mr-3"></div>
           Top 3 Emotions
         </h3>
 
@@ -160,7 +181,11 @@ const Insights = () => {
           {topThreeEmotions.map(([emotion, count], index) => (
             <div
               key={emotion}
-              className="bg-white rounded-xl p-4 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200"
+              className={`${
+                mode
+                  ? "bg-gray-800/70"
+                  : "bg-white/70 "
+              } rounded-xl p-4 shadow-md  hover:shadow-lg transition-all duration-200`}
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
@@ -168,10 +193,14 @@ const Insights = () => {
                     {index + 1}
                   </div>
                   {/* <span className="text-2xl">{getEmotionIcon(emotion)}</span> */}
-                  <span className="font-semibold text-gray-800 capitalize noto-sans">{emotion}</span>
+                  <span className={`font-semibold ${
+                  mode ? "text-gray-100" : "text-gray-700"
+                } capitalize noto-sans`}>{emotion}</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-500 noto-sans">{count} times</span>
+                  <span className={`text-sm font-medium ${
+                  mode ? "text-gray-300" : "text-gray-500"
+                } noto-sans`}>{count} times</span>
                   <div
                     className={`px-3 py-1 bg-gradient-to-r ${getEmotionColor(emotion)} text-white text-xs font-bold rounded-full noto-sans`}
                   >
@@ -194,7 +223,9 @@ const Insights = () => {
 
       {/* Footer Stats */}
       <div className="mt-6 pt-6 border-t border-gray-200">
-        <div className="flex items-center justify-center text-gray-500 urbanist">
+        <div className={`flex items-center justify-center ${
+                  mode ? "text-gray-300" : "text-gray-500"
+                } urbanist`}>
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"

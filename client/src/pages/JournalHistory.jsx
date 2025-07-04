@@ -31,7 +31,9 @@ function EmptyState() {
       <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
         <BookOpen className="w-12 h-12 text-blue-500" />
       </div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-2 noto-sans">No journal entries yet</h3>
+      <h3 className={`text-2xl font-bold mb-2 noto-sans ${
+                  mode ? "text-gray-300" : "text-gray-600"
+                }`}>No journal entries yet</h3>
       <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto urbanist">
         Start your journaling journey today. Your thoughts and reflections are waiting to be captured.
       </p>
@@ -70,11 +72,30 @@ const JournalHistory = () => {
     const { responses, isLoading } = useSelector((state) => state.journal);
     const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();
+    const { mode } = useSelector((state) => state.darkMode);
+
+    function EmptyState() {
+      return (
+        <div className="text-center py-16">
+          <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <BookOpen className="w-12 h-12 text-blue-500" />
+          </div>
+          <h3 className={`text-2xl font-bold mb-2 noto-sans ${
+                      mode ? "text-gray-100" : "text-gray-600"
+                    }`}>No journal entries yet!</h3>
+          <p className={`${
+                      mode ? "text-gray-400" : "text-gray-500"
+                    } text-lg mb-8 max-w-md mx-auto urbanist`}>
+            Start your journaling journey today. Your thoughts and reflections are waiting to be captured.
+          </p>
+        </div>
+      )
+    }
+
     
 
     const fetchJournals = async () => {
         try {
-            // Assuming you have an action to fetch journal responses
             await dispatch(fetchResponses());
         } catch (error) {
             console.error("Failed to fetch journal responses:", error);
@@ -99,20 +120,26 @@ const JournalHistory = () => {
     console.log(responses);
     // console.log(user);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 ">
+    <div className={`min-h-screen transition-colors duration-300 ${mode ? "bg-gray-900" : "bg-gray-50"}`}>
       <div className="pt-24 px-4 pb-12">
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-12 urbanist">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+              <div className={`w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center`}>
                 <FileText className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+              <h1 className={`text-4xl nunito-sans font-bold bg-clip-text text-transparent
+  ${mode 
+    ? "bg-gradient-to-r from-purple-300 via-blue-300 to-purple-400" 
+    : "bg-gradient-to-r from-purple-900 via-blue-800 to-purple-800"
+  }`}>
                 Your Journal Entries
               </h1>
             </div>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className={`transition-colors duration-300 schibsted-grotesk text-lg max-w-2xl mx-auto ${
+                  mode ? "text-gray-300" : "text-gray-600"
+                }`}>
               Explore your thoughts, memories, and reflections captured over time
             </p>
           </div>
@@ -129,15 +156,19 @@ const JournalHistory = () => {
           ) : (
             <>
               {/* Stats Bar */}
-              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-gray-200/50 shadow-sm">
+              <div className={` ${mode ? "bg-slate-800" : "bg-white/70"} backdrop-blur-sm rounded-2xl p-6 mb-8  shadow-sm`}>
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                         <FileText className="w-4 h-4 text-blue-600" />
                       </div>
-                      <span className="text-xl text-gray-600">
-                        <span className="font-semibold text-gray-900">{responses.length}</span> entries
+                      <span className={`text-xl ${
+                  mode ? "text-gray-300" : "text-gray-600"
+                }`}>
+                        <span className={`font-semibold ${
+                  mode ? "text-gray-300" : "text-gray-600"
+                }`}>{responses.length}</span> entries
                       </span>
                     </div>
                   </div>
@@ -149,7 +180,11 @@ const JournalHistory = () => {
                 {responses.map((entry, index) => (
                   <div
                     key={entry._id}
-                    className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-gray-200/50 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 hover:scale-[1.02] hover:bg-white"
+                    className={`group ${
+                      mode
+                        ? "bg-gray-800/70 border-gray-700/50 hover:bg-gray-800/90"
+                        : "bg-white/70 border-gray-200/50 hover:bg-white/90"
+                    }  rounded-2xl p-6 shadow-sm hover:shadow-sm transition-all duration-500 hover:scale-[1.01] `}
                     style={{
                       animationDelay: `${index * 100}ms`,
                     }}
@@ -157,20 +192,26 @@ const JournalHistory = () => {
                     <div className="flex flex-col h-full">
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
-                        <h2 className="text-xl font-bold text-gray-900 transition-colors duration-300 line-clamp-2">
+                        <h2 className={`text-xl font-bold ${
+                  mode ? "text-gray-100" : "text-gray-600"
+                } transition-colors duration-300 line-clamp-2`}>
                           {entry.title}
                         </h2>
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center ml-3 group-hover:scale-110 transition-transform duration-300">
+                        {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center ml-3 group-hover:scale-110 transition-transform duration-300">
                           <BookOpen className="w-5 h-5 text-blue-600" />
-                        </div>
+                        </div> */}
                       </div>
 
                       {/* Content Preview */}
-                      <p className="text-gray-700 line-clamp-4 leading-relaxed mb-6 flex-grow">{entry.text}</p>
+                      <p className={`${
+                  mode ? "text-gray-100" : "text-gray-600"
+                } line-clamp-2 leading-relaxed mb-6 flex-grow`}>{entry.text}</p>
 
                       {/* Footer */}
                       <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <div className={`flex items-center gap-2 text-sm ${
+                  mode ? "text-gray-100" : "text-gray-600"
+                }`}>
                           <Calendar className="w-4 h-4" />
                           <span>{formatDate(entry.createdAt)}</span>
                         </div>
@@ -180,14 +221,14 @@ const JournalHistory = () => {
                           onClick={() => navigate(`/journal/${entry._id}`)}
                           className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-2 rounded-full font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg transform flex items-center justify-center gap-1 group"
                         >
-                          <Eye className="w-4 h-4 transition-transform duration-300" />
+                          {/* <Eye className="w-4 h-4 transition-transform duration-300" /> */}
                           View Details
                         </button>
                         <button
                           onClick={() => handleDeleteJournal(entry._id)}
                           className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-2 rounded-full font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform flex items-center justify-center gap-1 group"
                         >
-                          <Trash className="w-4 h-4 transition-transform duration-300" />
+                          {/* <Trash className="w-4 h-4 transition-transform duration-300" /> */}
                           Delete
                         </button>
 

@@ -12,8 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
-        minlength: 6,
+        required: false,
     },
     bio: {
         type: String,
@@ -23,6 +22,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    reminderTime: {
+        type: String,
+        default: null,
+    }
     }, {
     timestamps: true,
 });

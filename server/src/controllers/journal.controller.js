@@ -1,5 +1,7 @@
 import aiService from '../services/ai.service.js';
 import Journal from '../models/journal.model.js';
+import User from '../models/user.model.js';
+
 
 export const generateResponse = async (req, res) => {
     const { text, title } = req.body;
@@ -91,10 +93,10 @@ export const getMoodTrend = async (req, res) => {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  };
+};
 
   
-  export const getEmotionStats = async (req, res) => {
+export const getEmotionStats = async (req, res) => {
     const userId = req.user._id;
   
     try {
@@ -113,7 +115,7 @@ export const getMoodTrend = async (req, res) => {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  };
+};
 
 export const trackStreak = async (req, res) => {
 
@@ -154,7 +156,7 @@ export const trackStreak = async (req, res) => {
     console.log(error);
     res.status(500).json({ error: err.message });
   }
-}
+};
 
 export const countJournalEntries = async (req, res) => {
   const userId = req.user._id;
@@ -185,5 +187,24 @@ res.status(200).json({ count: journalCount });
     console.log(error);
     res.status(500).json({ error: err.message });
   }
-}
+};
+
+export const setReminder = async (req, res) => {
+  const { reminderTime } = req.body;
+  const userId = req.user._id;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    user.reminderTime = reminderTime;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Reminder time set successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  } 
+};
   

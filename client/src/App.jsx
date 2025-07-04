@@ -37,7 +37,9 @@ function App() {
       <BrowserRouter>
       {user && <Navbar />}
         
-        <Toaster />
+        <Toaster toastOptions={{
+          className: "schibsted-grotesk rounded-full px-4 py-3",
+        }}/>
         <Routes>
           <Route
             path="/"

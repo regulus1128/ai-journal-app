@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { axiosInstance } from '../lib/axiosInstance';
+import { useSelector } from 'react-redux';
 
 const JournalDetail = () => {
     const { id } = useParams();
     const [entry, setEntry] = useState(null);
     const navigate = useNavigate();
+    const { mode } = useSelector((state) => state.darkMode);
+
 
     useEffect(() => {
         const fetchEntry = async () => {
@@ -31,13 +34,19 @@ const JournalDetail = () => {
     const { title, text, aiResponse } = entry;
 
   return (
-    <div className="h-full pt-20 px-4 mb-4">
-      <div className="max-w-4xl min-h-screen mx-auto p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 space-y-8">
+    <div className={`min-h-screen transition-colors duration-300 pt-20 px-4 mb-10 ${mode ? "bg-gray-900" : "bg-gray-50"}`}>
+      <div className={`max-w-4xl mt-5 min-h-screen mx-auto p-8 ${
+                      mode
+                        ? "bg-gray-800/70 border-gray-700/50 hover:bg-gray-800/90"
+                        : "bg-white/70 border-gray-200/50 hover:bg-white/90"
+                    } backdrop-blur-sm rounded-2xl shadow-xl space-y-8`}>
         <div className="border-b noto-sans border-gray-100 pb-6">
           <h1 className="text-3xl noto-sans font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             {title}
           </h1>
-          <p className="text-gray-600 text-lg leading-relaxed max-w-2xl">{text}</p>
+          <p className={`${
+                  mode ? "text-gray-100" : "text-gray-600"
+                } text-lg leading-relaxed max-w-2xl`}>{text}</p>
         </div>
 
         <div className="grid gap-6">
