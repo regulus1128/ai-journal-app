@@ -34,7 +34,7 @@ router.get("/google/callback",
     });
 
     // ✅ Redirect to frontend (you can also send user info here)
-    res.redirect("http://localhost:5173/dashboard"); // or wherever your app's home is
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`); // or wherever your app's home is
   }
 );
 
