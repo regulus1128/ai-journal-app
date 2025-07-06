@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { login } from "../features/authSlice";
+import { axiosInstance } from "../lib/axiosInstance";
 
 const Login = () => {
 
@@ -18,6 +19,7 @@ const Login = () => {
   const handleChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,8 +27,11 @@ const Login = () => {
     try {
       const res = await dispatch(login(loginData));
       // console.log(res);
-      toast.success(res.payload.message);
+      // toast.success(res.payload.message);
       navigate("/dashboard");
+      const messageRes = await axiosInstance.get("/user/welcome");
+      // console.log(messageRes);
+      toast(messageRes.data.message);
     } catch (error) {
       console.log(error);
       // toast.error(error);
@@ -37,6 +42,9 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+      <Toaster toastOptions={{
+          className: "schibsted-grotesk text-lg rounded-full px-5 py-7 mt-4",
+        }}/>
       <div className="w-full h-[10%] mt-20 max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
         {/* Form Content */}
         <div className="px-6 mt-6 pb-8 space-y-6">

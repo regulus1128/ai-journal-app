@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
     reminderTime: {
         type: String,
         default: null,
+    },
+    showWelcomeMessage: {
+        type: Boolean,
+        default: true,
     }
     }, {
     timestamps: true,

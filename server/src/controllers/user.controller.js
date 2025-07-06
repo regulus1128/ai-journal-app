@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import streamifier from "streamifier";
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth20";
+import generateWelcomeMessage from "../services/welcome.service.js";
 
 export const register = async (req, res) => {
     try {
@@ -213,3 +214,16 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const fetchWelcomeMessage = async (req, res) => {
+  // const userId = req.user?._id;
+  console.log(req.user); 
+  try {
+    const message = await generateWelcomeMessage(req.user?.name);
+    return res.status(200).json({ success: true, message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+}

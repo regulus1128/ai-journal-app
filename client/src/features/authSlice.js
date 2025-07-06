@@ -38,7 +38,7 @@ export const checkAuth = createAsyncThunk(
         try {
             const response = await axiosInstance.get("/user/check");
             // console.log(response);
-            console.log("✅ checkAuth response:", response);
+            // console.log("✅ checkAuth response:", response);
             return response.data;
         } catch (error) {
             // toast.error(error.response.data.message || "Authentication check failed");

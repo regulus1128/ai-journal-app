@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { BookOpen, PenTool, TrendingUp, Calendar, Heart, Sparkles } from "lucide-react"
 import { fetchStreak } from '../features/journalSlice'
 import { axiosInstance } from '../lib/axiosInstance'
+import toast, { Toaster } from 'react-hot-toast'
 
 const capitalizeFirst = (str) => {
   if (!str) return "";
@@ -20,6 +21,8 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedTime, setSelectedTime] = useState("09:00");
+  const [showModal, setShowModal] = useState(false);
+  const [welcomeMessage, setWelcomeMessage] = useState("");
 
   const getStreak = async () => {
     const res = await axiosInstance.get("/journal/streak");
@@ -49,10 +52,31 @@ const Dashboard = () => {
     }
   }
 
+  const hasFetched = useRef(false);
+  
+
+  const showWelcome = async () => {
+    try {
+      if(user?.showWelcomeMessage && !hasFetched.current){
+        hasFetched.current = true;
+        const res = await axiosInstance.get("/user/welcome");
+        // console.log(res);
+        if(res.data.success){
+          toast(res.data.message);
+          setWelcomeMessage(res.data.message);
+          setShowModal(true);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     getStreak();
     fetchLatestResponse();
     fetchJournalCount();
+    // showWelcome();
   }, []);
 
   
@@ -60,6 +84,7 @@ const Dashboard = () => {
   // console.log(user);
   return (
     <div className={`min-h-screen urbanist pt-16 transition-colors duration-300 ${mode ? "bg-gray-900" : "bg-gray-50"}`}>
+      
       <div className="container mx-auto px-2 py-8 max-w-6xl">
         {/* Header Section */}
         <div className="mb-12">
@@ -85,9 +110,7 @@ const Dashboard = () => {
               </p>
               
             </div>
-            {/* <div className='flex'>
-                <button onClick={() => setShowTimePicker(true)} className='rounded-full bg-gradient-to-r from-pink-500 to-purple-500 px-3 py-2 text-white cursor-pointer'>Set Daily Affirmation Time</button>
-            </div> */}
+            
           </div>
         </div>
 
@@ -167,7 +190,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className={`font-medium transition-colors duration-300 ${mode ? "text-gray-300" : "text-gray-600"}`}>
-                  Mood Today
+                  Current Mood
                 </p>
                 <p
                   className={`text-2xl font-bold transition-colors duration-300 ${
@@ -312,6 +335,7 @@ const Dashboard = () => {
   )}
 
       </div>
+
     </div>
   )
 }

@@ -26,7 +26,6 @@ const model = genAI.getGenerativeModel({
         const result = await model.generateContent(journalEntry);
 
         let raw = await result.response.text();
-        // console.log("🧾 AI Raw Output:\n", raw);
         if (raw.startsWith("```")) {
           raw = raw.replace(/```json|```/gi, "").trim();
         }
