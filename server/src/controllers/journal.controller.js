@@ -1,6 +1,7 @@
 import aiService from '../services/ai.service.js';
 import Journal from '../models/journal.model.js';
 import User from '../models/user.model.js';
+import generateForecast from '../services/forecast.service.js';
 
 
 export const generateResponse = async (req, res) => {
@@ -207,4 +208,21 @@ export const setReminder = async (req, res) => {
     res.status(500).json({ error: err.message });
   } 
 };
+
+export const getMoodForecast = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const entries = await Journal.find({ user: userId, "aiResponse.moodScore": { $ne: null } })
+    .sort({ createdAt: -1 })
+    .limit(5);
+    const moodScores = entries.map(entry => entry.aiResponse.moodScore);
+    const response = await generateForecast(moodScores);
+    // console.log(response);
+    res.status(200).json({ success: true, response });
+  } catch (error) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+}
   

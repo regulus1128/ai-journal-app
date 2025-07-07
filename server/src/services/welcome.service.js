@@ -14,6 +14,7 @@ const generateWelcomeMessage = async (name) => {
     const result = await model.generateContent(name);
     const raw = await result.response.text();
     return raw.trim();
+    
   } catch (err) {
     console.error("Gemini welcome error:", err);
     return "Welcome back! You've got this.";

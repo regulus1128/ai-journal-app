@@ -1,14 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { BookOpen, PenTool, TrendingUp, Calendar, Heart, Sparkles } from "lucide-react"
+import { BookOpen, PenTool, TrendingUp, Calendar, Heart } from "lucide-react"
 import { fetchStreak } from '../features/journalSlice'
 import { axiosInstance } from '../lib/axiosInstance'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 const capitalizeFirst = (str) => {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const getTodayDate = () => {
+  return new Date().toISOString().split("T")[0]; 
 };
 
 const Dashboard = () => {
@@ -19,10 +23,9 @@ const Dashboard = () => {
   const [moodToday, setMoodToday] = useState("-");
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [selectedTime, setSelectedTime] = useState("09:00");
-  const [showModal, setShowModal] = useState(false);
-  const [welcomeMessage, setWelcomeMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [forecast, setForecast] = useState(null);
+
 
   const getStreak = async () => {
     const res = await axiosInstance.get("/journal/streak");
@@ -52,36 +55,62 @@ const Dashboard = () => {
     }
   }
 
-  const hasFetched = useRef(false);
+  const getDailyForecast = async (id) => {
+    const today = getTodayDate();
+    const storageKey = `mood-forecast-${id}`;
+    const cached = localStorage.getItem(storageKey);
+  
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed.date === today) {
+        return parsed; // 🧠 Use saved forecast
+      }
+    }
+  
+    
+    try {
+      const res = await axiosInstance.get("/journal/forecast");
+      const newForecast = {
+        ...res.data,
+        date: today,
+      };
+      localStorage.setItem("mood-forecast", JSON.stringify(newForecast));
+      return newForecast;
+    } catch (error) {
+      console.error("Failed to fetch mood forecast", error);
+      return {
+        prediction: "unknown",
+        suggestion: "You're doing your best. Be gentle with yourself 💜",
+        date: today,
+      };
+    }
+  };
   
 
-  const showWelcome = async () => {
-    try {
-      if(user?.showWelcomeMessage && !hasFetched.current){
-        hasFetched.current = true;
-        const res = await axiosInstance.get("/user/welcome");
-        // console.log(res);
-        if(res.data.success){
-          toast(res.data.message);
-          setWelcomeMessage(res.data.message);
-          setShowModal(true);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  
 
   useEffect(() => {
     getStreak();
     fetchLatestResponse();
     fetchJournalCount();
-    // showWelcome();
+    // fetchForecast();
+    
   }, []);
 
-  
+  useEffect(() => {
+    if (user?._id) {
+      const fetchForecast = async () => {
+        setIsLoading(true);
+        const forecast = await getDailyForecast(user._id);
+        console.log(forecast.response);
+        setForecast(forecast.response);
+        setIsLoading(false);
+      };
+      fetchForecast();
+    }
+  }, [user]);
 
-  // console.log(user);
+
   return (
     <div className={`min-h-screen urbanist pt-16 transition-colors duration-300 ${mode ? "bg-gray-900" : "bg-gray-50"}`}>
       
@@ -90,9 +119,7 @@ const Dashboard = () => {
         <div className="mb-12">
           <div className="flex items-center justify-between gap-3 mb-4">
             <div>
-              {/* <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div> */}
+              
               <h1
                 className={`text-4xl nunito-sans font-bold bg-gradient-to-r ${
                   mode ? "from-white to-gray-300" : "from-gray-900 to-gray-600"
@@ -258,81 +285,50 @@ const Dashboard = () => {
           </Link>
         </div>
 
-        {/* Recent Activity: might add later */}
-        {/* <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm overflow-hidden">
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 p-4 bg-gray-50/50 rounded-xl">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <PenTool className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">New journal entry</p>
-                    <p className="text-sm text-gray-600">2 hours ago</p>
-                  </div>
-                </div>
+        
 
-                <div className="flex items-center gap-4 p-4 bg-gray-50/50 rounded-xl">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Heart className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">Mood check-in completed</p>
-                    <p className="text-sm text-gray-600">Yesterday</p>
-                  </div>
-                </div>
+        {isLoading ? (
+  <div className={`mt-10 ${mode ? "text-gray-300" : "text-gray-600"} text-center text-lg`}>
+  <div className="flex items-center justify-center space-x-2">
+    <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+    <div className="w-2 h-2 bg-current rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+    <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+  </div>
+  <p className="mt-3 animate-pulse">Loading your mood forecast...</p>
+</div>
+) : (
+  forecast?.prediction && forecast?.suggestion && (
+    <div className="mt-10 relative overflow-hidden">
+      {/* <div className="absolute inset-0 bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 rounded-3xl blur-sm opacity-75"></div> */}
+      <div className="relative  from-slate-700 to-gray-600 bg-gradient-to-r p-8 rounded-3xl shadow-2xl  backdrop-blur-sm">
+        {/* <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div> */}
+        {/* <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div> */}
 
-                <div className="flex items-center gap-4 p-4 bg-gray-50/50 rounded-xl">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">Weekly insights generated</p>
-                    <p className="text-sm text-gray-600">3 days ago</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="relative z-10">
+          <div className="flex items-start space-x-3 mb-4">
+            {/* <div className="w-3 h-3 bg-white/80 rounded-full mt-2 animate-pulse"></div> */}
+            <h3 className="text-xl nunito-sans font-bold text-white leading-relaxed">
+              Based on your recent entries, your tomorrow's mood will be: 
+              <p className="inline mt-2 text-2xl font-extrabold text-yellow-200 drop-shadow-sm">
+                {" "}{forecast.prediction}
+              </p>
+            </h3>
           </div>
-        </div> */}
-        {showTimePicker && (
-  <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50">
-    <div className={`${mode ? "bg-gray-900" : "bg-gray-50"} p-6 rounded-lg shadow-lg w-80 space-y-4 relative`}>
-      <h2 className="text-lg font-semibold text-center text-purple-700">Pick a Time</h2>
 
-      <input
-        type="time"
-        value={selectedTime}
-        onChange={(e) => setSelectedTime(e.target.value)}
-        className={`w-full border border-gray-300 rounded px-3 py-2 ${
-          mode ? "text-white" : "text-gray-900"
-        }`}
-      />
-
-      <div className="flex justify-between pt-4">
-        <button
-          onClick={() => {
-            setShowTimePicker(false);
-            // TODO: Save selectedTime somewhere (state/localStorage/DB)
-          }}
-          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-        >
-          Save
-        </button>
-        <button
-          onClick={() => setShowTimePicker(false)}
-          className={`${
-            mode ? "text-white hover:text-gray-200" : "text-gray-900 hover:text-gray-700"
-          } px-4 py-2 rounded `}
-        >
-          Cancel
-        </button>
+          <div className="mt-6 p-4 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20">
+            <p className="italic text-lg text-gray-50 leading-relaxed font-medium">
+              <span className="text-yellow-200 text-xl">"</span>
+              {forecast.suggestion}
+              <span className="text-yellow-200 text-xl">"</span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  )}
+  )
+)}
+
+
 
       </div>
 

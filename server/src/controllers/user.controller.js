@@ -218,7 +218,7 @@ export const updateProfile = async (req, res) => {
 
 export const fetchWelcomeMessage = async (req, res) => {
   // const userId = req.user?._id;
-  console.log(req.user); 
+  // console.log(req.user); 
   try {
     const message = await generateWelcomeMessage(req.user?.name);
     return res.status(200).json({ success: true, message });
