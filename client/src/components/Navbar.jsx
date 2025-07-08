@@ -17,6 +17,7 @@ const Navbar = () => {
       const res = await dispatch(logout());
       // console.log(res);
       toast.success("Logged out successfully!");
+      localStorage.removeItem(`mood-forecast`);
       navigate("/");
     } catch (error) {
       console.log(error);

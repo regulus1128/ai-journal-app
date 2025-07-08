@@ -217,6 +217,12 @@ export const getMoodForecast = async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(5);
     const moodScores = entries.map(entry => entry.aiResponse.moodScore);
+    if (moodScores.length === 0) {
+      return res.json({ 
+        success: false, 
+        message: "No mood data available yet. Write a journal to start tracking your mood!" 
+      });
+    }
     const response = await generateForecast(moodScores);
     // console.log(response);
     res.status(200).json({ success: true, response });

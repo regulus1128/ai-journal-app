@@ -39,7 +39,7 @@ const Dashboard = () => {
       // console.log(res.data.response);
       setMoodToday(res.data.response.aiResponse.moodToday);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
     
   }
@@ -70,14 +70,22 @@ const Dashboard = () => {
     
     try {
       const res = await axiosInstance.get("/journal/forecast");
-      const newForecast = {
-        ...res.data,
-        date: today,
-      };
-      localStorage.setItem("mood-forecast", JSON.stringify(newForecast));
-      return newForecast;
+      console.log(res);
+      if(res.data.success){
+        const newForecast = {
+          ...res.data,
+          date: today,
+        };
+        localStorage.setItem("mood-forecast", JSON.stringify(newForecast));
+        return newForecast;
+      } else{
+        setForecast(null);
+        setIsLoading(false);
+
+      }
+      
     } catch (error) {
-      console.error("Failed to fetch mood forecast", error);
+      // console.error("Failed to fetch mood forecast", error);
       return {
         prediction: "unknown",
         suggestion: "You're doing your best. Be gentle with yourself 💜",
@@ -102,7 +110,7 @@ const Dashboard = () => {
       const fetchForecast = async () => {
         setIsLoading(true);
         const forecast = await getDailyForecast(user._id);
-        console.log(forecast.response);
+        // console.log(forecast.response);
         setForecast(forecast.response);
         setIsLoading(false);
       };
@@ -297,16 +305,11 @@ const Dashboard = () => {
   <p className="mt-3 animate-pulse">Loading your mood forecast...</p>
 </div>
 ) : (
-  forecast?.prediction && forecast?.suggestion && (
+  forecast?.prediction && forecast?.suggestion ? (
     <div className="mt-10 relative overflow-hidden">
-      {/* <div className="absolute inset-0 bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 rounded-3xl blur-sm opacity-75"></div> */}
       <div className="relative  from-slate-700 to-gray-600 bg-gradient-to-r p-8 rounded-3xl shadow-2xl  backdrop-blur-sm">
-        {/* <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div> */}
-        {/* <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div> */}
-
         <div className="relative z-10">
           <div className="flex items-start space-x-3 mb-4">
-            {/* <div className="w-3 h-3 bg-white/80 rounded-full mt-2 animate-pulse"></div> */}
             <h3 className="text-xl nunito-sans font-bold text-white leading-relaxed">
               Based on your recent entries, your tomorrow's mood will be: 
               <p className="inline mt-2 text-2xl font-extrabold text-yellow-200 drop-shadow-sm">
@@ -325,7 +328,12 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-  )
+  ) : <>
+  <p className={`text-center mt-10 schibsted-grotesk ${mode ? "text-gray-300" : "text-gray-600"}`}>
+    Write your first journal entry to unlock tomorrow's mood forecast.
+  </p>
+      
+  </>
 )}
 
 
