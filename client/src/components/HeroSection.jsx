@@ -9,6 +9,7 @@ const URL = import.meta.env.MODE === "development"
 const HeroSection = () => {
   const navigate = useNavigate();
 
+  
   const handleGoogleLogin = () => {
     // Redirect to backend OAuth route
     window.location.href = `${URL}/auth/google`;
@@ -56,7 +57,6 @@ const HeroSection = () => {
           onClick={handleGoogleLogin}
           className="w-full bg-transparent cursor-pointer text-white px-8 py-3.5 rounded-full font-semibold hover:bg-white hover:scale-105 hover:text-gray-800 transition-all duration-300 shadow-xl border-2 border-white backdrop-blur-sm min-w-[140px] noto-sans flex items-center justify-center gap-3"
         >
-          {/* <GoogleIcon /> */}
           <img className='w-5' src={"google2.png"} alt="" />
           SIGN IN WITH GOOGLE
         </button>

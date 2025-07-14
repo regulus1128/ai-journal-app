@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { BookOpen, PenTool, TrendingUp, Calendar, Heart } from "lucide-react"
-import { fetchStreak } from '../features/journalSlice'
 import { axiosInstance } from '../lib/axiosInstance'
 import toast from 'react-hot-toast'
 
@@ -22,9 +21,9 @@ const Dashboard = () => {
   const [streak, setStreak] = useState(0);
   const [moodToday, setMoodToday] = useState("-");
   const [count, setCount] = useState(0);
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [forecast, setForecast] = useState(null);
+  const hasShownMessage = useRef(false);
 
 
   const getStreak = async () => {
@@ -93,6 +92,24 @@ const Dashboard = () => {
       };
     }
   };
+
+  useEffect(() => {
+    const showWelcomeMessage = async () => {
+      try {
+        if (user?.showWelcomeMessage && !hasShownMessage.current) {
+          const res = await axiosInstance.get("/user/welcome");
+          toast(res.data.message);
+          hasShownMessage.current = true;
+        }
+      } catch (error) {
+        console.log("Welcome message error", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user?._id) showWelcomeMessage();
+  }, [user]);
   
 
   
@@ -232,7 +249,7 @@ const Dashboard = () => {
                     mode ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  {capitalizeFirst(moodToday)}
+                  {capitalizeFirst(moodToday) || "-"}
                 </p>
               </div>
               <div
